@@ -22,14 +22,18 @@ public class DroolsController {
     @RequestMapping("/address")
     public void test(int num) {
         Address address = new Address();
-        address.setPostcode(generateRandom(num));
-        KieSession kieSession = kieContainer.newKieSession();
-
+        String generateRandom = generateRandom(num);
+        address.setPostcode(generateRandom);
         AddressCheckResult result = new AddressCheckResult();
+
+        KieSession kieSession = kieContainer.newKieSession();
         kieSession.insert(address);
         kieSession.insert(result);
+
         int ruleFiredCount = kieSession.fireAllRules();
+
         kieSession.destroy();
+
         System.out.println("触发了" + ruleFiredCount + "条规则");
 
         if (result.isPostCodeResult()) {
