@@ -1,0 +1,48 @@
+package rules;
+dialect  "java"
+
+import com.study.drools.entity.Order
+
+rule "rule0"
+    no-loop true
+    lock-on-active true
+    salience 1
+    when
+        $s : Order(amount <= 100)
+    then
+        $s.setScore(0);
+        update($s);
+end
+
+rule "rule1"
+    no-loop true
+    lock-on-active true
+    salience 1
+    when
+        $s : Order(amount > 100 && amount <= 500)
+    then
+        $s.setScore(100);
+        update($s);
+end
+
+rule "rule2"
+    no-loop true
+    lock-on-active true
+    salience 1
+    when
+        $s : Order(amount > 500 && amount <= 1000)
+    then
+        $s.setScore(500);
+        update($s);
+end
+
+rule "rule3"
+    no-loop true
+    lock-on-active true
+    salience 1
+    when
+        $s : Order(amount > 1000)
+    then
+         $s.setScore(1000);
+         update($s);
+end
