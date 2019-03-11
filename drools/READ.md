@@ -13,6 +13,8 @@ The following guides illustrates how to use certain features concretely:
 
 https://github.com/ityouknow/drools-examples
 
+## 必须 mvn clean install ， 然后 java -jar xxxx.jar 这种方式启动。 这样通过controller接口的方式才能生效
+
 ## 规则引擎
 ### 相关介绍
 

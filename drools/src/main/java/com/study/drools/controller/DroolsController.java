@@ -1,59 +1,43 @@
 package com.study.drools.controller;
 
-import com.study.drools.entity.Order;
 import com.study.drools.model.Address;
 import com.study.drools.model.fact.AddressCheckResult;
+import com.study.drools.util.RandomUtils;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
 
 @RequestMapping("/drools")
 @Controller
 public class DroolsController {
 
-    @Resource
+    @Autowired
     private KieContainer kieContainer;
 
     @ResponseBody
-    @RequestMapping("/address")
-    public void test(int num) {
-        Address address = new Address();
-        String generateRandom = generateRandom(num);
-        address.setPostcode(generateRandom);
-        AddressCheckResult result = new AddressCheckResult();
+    @GetMapping("/address")
+    public void test(@RequestParam Integer num) {
 
+        Address address = new Address();
+        String random = RandomUtils.generateRandom(num);
+        address.setPostcode(random);
+
+        AddressCheckResult result = new AddressCheckResult();
         KieSession kieSession = kieContainer.newKieSession();
         kieSession.insert(address);
         kieSession.insert(result);
-
         int ruleFiredCount = kieSession.fireAllRules();
+        System.out.println("触发了" + ruleFiredCount + "条规则");
 
         kieSession.destroy();
-
-        System.out.println("触发了" + ruleFiredCount + "条规则");
 
         if (result.isPostCodeResult()) {
             System.out.println("规则校验通过");
         }
-    }
-
-    /**
-     * 生成随机数
-     *
-     * @param num
-     * @return
-     */
-    public String generateRandom(int num) {
-        String chars = "0123456789";
-        StringBuffer number = new StringBuffer();
-        for (int i = 0; i < num; i++) {
-            int rand = (int) (Math.random() * 10);
-            number = number.append(chars.charAt(rand));
-        }
-        return number.toString();
     }
 }

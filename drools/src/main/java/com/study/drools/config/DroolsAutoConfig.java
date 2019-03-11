@@ -2,9 +2,7 @@ package com.study.drools.config;
 
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.*;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.io.ResourceFactory;
@@ -18,11 +16,6 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.IOException;
 
-/**
- * @author walle
- * @version 1.0
- * @create 2019-03-10
- */
 @Configuration
 public class DroolsAutoConfig {
 
@@ -31,13 +24,20 @@ public class DroolsAutoConfig {
     @Bean
     @ConditionalOnMissingBean(KieFileSystem.class)
     public KieFileSystem kieFileSystem() throws IOException {
-        KieFileSystem kieFileSystem = getKieServices().newKieFileSystem();
-        for (Resource file : getRuleFiles()) {
+        KieFileSystem kieFileSystem = this.getKieServices().newKieFileSystem();
+        Resource[] ruleFiles = this.getRuleFiles();
+        for (Resource file : ruleFiles) {
             kieFileSystem.write(ResourceFactory.newClassPathResource(RULES_PATH + file.getFilename(), "UTF-8"));
         }
         return kieFileSystem;
     }
 
+    /**
+     * 这里要引入 org.springframework.core.io.Resource  包
+     *
+     * @return
+     * @throws IOException
+     */
     private Resource[] getRuleFiles() throws IOException {
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         return resourcePatternResolver.getResources("classpath*:" + RULES_PATH + "**/*.*");
@@ -46,16 +46,14 @@ public class DroolsAutoConfig {
     @Bean
     @ConditionalOnMissingBean(KieContainer.class)
     public KieContainer kieContainer() throws IOException {
-        final KieRepository kieRepository = getKieServices().getRepository();
+        final KieRepository kieRepository = this.getKieServices().getRepository();
 
         kieRepository.addKieModule(() -> kieRepository.getDefaultReleaseId());
 
-        KieBuilder kieBuilder = getKieServices().newKieBuilder(kieFileSystem());
+        KieBuilder kieBuilder = this.getKieServices().newKieBuilder(kieFileSystem());
         kieBuilder.buildAll();
 
-        KieContainer kieContainer=getKieServices().newKieContainer(kieRepository.getDefaultReleaseId());
-
-        return kieContainer;
+        return this.getKieServices().newKieContainer(kieRepository.getDefaultReleaseId());
     }
 
     private KieServices getKieServices() {
