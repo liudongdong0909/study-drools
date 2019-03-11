@@ -4,7 +4,7 @@ import com.study.drools.model.Address;
 import com.study.drools.model.fact.AddressCheckResult;
 import com.study.drools.service.DroolsRuleService;
 import com.study.drools.util.RandomUtils;
-import org.kie.api.runtime.KieContainer;
+import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -23,8 +23,8 @@ import java.util.Arrays;
 @Controller
 public class DroolsController {
 
-    @Autowired
-    private KieContainer kieContainer;
+    // @Autowired
+    // private KieContainer kieContainer;
 
     @Autowired
     private DroolsRuleService droolsRuleService;
@@ -38,10 +38,18 @@ public class DroolsController {
         address.setPostcode(random);
 
         AddressCheckResult result = new AddressCheckResult();
-        KieSession kieSession = kieContainer.newKieSession();
+        KieSession kieSession = DroolsRuleService.kieContainer.newKieSession();
+
+        kieSession.getKieBase().getKiePackages().forEach(pck -> {
+            pck.getRules().forEach(rule -> {
+                System.out.println(rule);
+            });
+        });
+
         kieSession.insert(address);
         kieSession.insert(result);
         int ruleFiredCount = kieSession.fireAllRules();
+
         System.out.println("触发了" + ruleFiredCount + "条规则");
 
         kieSession.destroy();
@@ -56,19 +64,17 @@ public class DroolsController {
     public String reload() throws IOException {
         droolsRuleService.reload();
 
-
-        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-        //\address.drl
-        Resource[] resources = resourcePatternResolver.getResources("classpath*:" + "rule/" + "**/*.*");
-        Arrays.stream(resources).forEach(resource ->{
-
-            try {
-                System.out.println(resource.getFilename());
-                System.out.println(resource.getURL());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        // ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+        // Resource[] resources = resourcePatternResolver.getResources("classpath*:" + "rules/" + "**/*.*");
+        // Arrays.stream(resources).forEach(resource ->{
+        //
+        //     try {
+        //         System.out.println(resource.getFilename());
+        //         System.out.println(resource.getURL());
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+        // });
         return"OK";
 }
 }

@@ -29,6 +29,7 @@ public class DroolsRuleService {
 
     private List<Rule> loadRules() {
         List<Rule> rules = ruleRepository.findAll();
+        rules.forEach(rule -> System.out.println(rule.getContent()));
         return rules;
     }
 
@@ -40,7 +41,7 @@ public class DroolsRuleService {
 
         for (Rule rule : rules) {
             String drl = rule.getContent();
-            kfs.write("src/main/resources/" + drl.hashCode() + ".drl", drl);
+            kfs.write("src/main/resources/rules/" + drl.hashCode() + ".drl", drl);
             //kfs.write(ResourceFactory.newClassPathResource("rules/address.drl", "UTF-8"));
         }
 

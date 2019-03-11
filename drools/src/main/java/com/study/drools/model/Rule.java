@@ -25,6 +25,8 @@ public class Rule implements Serializable {
     private String lastModifyTime;
     @Column(nullable = false)
     private String createTime;
+    @Column(name = "enable_status")
+    private int enableStatus;
 
     public Long getId() {
         return id;
@@ -74,6 +76,13 @@ public class Rule implements Serializable {
         this.createTime = createTime;
     }
 
+    public int getEnableStatus() {
+        return enableStatus;
+    }
+
+    public void setEnableStatus(int enableStatus) {
+        this.enableStatus = enableStatus;
+    }
 
     @Override
     public String toString() {

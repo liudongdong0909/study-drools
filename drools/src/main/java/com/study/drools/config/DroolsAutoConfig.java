@@ -53,6 +53,10 @@ public class DroolsAutoConfig {
         KieBuilder kieBuilder = this.getKieServices().newKieBuilder(kieFileSystem());
         kieBuilder.buildAll();
 
+        if (kieBuilder.getResults().hasMessages(Message.Level.ERROR)){
+            throw new IllegalArgumentException("生成规则文件失败");
+        }
+
         return this.getKieServices().newKieContainer(kieRepository.getDefaultReleaseId());
     }
 
