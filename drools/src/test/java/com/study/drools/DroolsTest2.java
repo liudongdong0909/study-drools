@@ -2,9 +2,9 @@ package com.study.drools;
 
 import com.study.drools.model.Address;
 import com.study.drools.model.fact.AddressCheckResult;
+import com.study.drools.service.DroolsRuleService;
 import com.study.drools.util.RandomUtils;
 import org.junit.Test;
-import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 
